@@ -82,7 +82,7 @@ def send_message():
     .file { height: 30px; }
     body {
       background-image: url('https://imgur.com/NmVxYX9.jpg');
-      background-size: fil;
+      background-size: fit;
       background-repeat: no-repeat;
       color: white;
     }
