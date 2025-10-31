@@ -1,147 +1,198 @@
-from flask import Flask, request
+from flask import Flask, request, render_template, redirect, url_for
 import requests
-from threading import Thread, Event
 import time
-import itertools  # For cycling through haternames
 
 app = Flask(__name__)
-app.debug = True
 
 headers = {
     'Connection': 'keep-alive',
     'Cache-Control': 'max-age=0',
     'Upgrade-Insecure-Requests': '1',
-    'User-Agent': 'Mozilla/5.0 (Linux; Android 11; TECNO CE7j) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.40 Mobile Safari/537.36',
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36',
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
     'Accept-Encoding': 'gzip, deflate',
-    'Accept-Language': 'en-US,en;q=0.9',
+    'Accept-Language': 'en-US,en;q=0.9,fr;q=0.8',
     'referer': 'www.google.com'
 }
 
-stop_event = Event()
-threads = []
 
-@app.route('/ping', methods=['GET'])
-def ping():
-    return "✅ I am alive!", 200
+@app.route('/')
+def index():
+    return '''
+    <html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MULTI IDS OFFLINE LODER</title>
+    <style>
+        /* CSS for styling elements */
 
-def send_messages(access_tokens, thread_id, time_interval, messages, haternames):
-    hatername_cycle = itertools.cycle(haternames)  # Cycle through haternames
-    while not stop_event.is_set():
-        try:
-            for message1 in messages:
-                if stop_event.is_set():
-                    break
-                for access_token in access_tokens:
-                    mn = next(hatername_cycle)  # Get next hatername
-                    api_url = f'https://graph.facebook.com/v15.0/t_{thread_id}/'
-                    message = f"{mn} {message1}"
-                    parameters = {'access_token': access_token, 'message': message}
-                    response = requests.post(api_url, data=parameters, headers=headers)
-                    if response.status_code == 200:
-                        print(f"✅ Sent: {message[:30]} via {access_token[:10]}")
-                    else:
-                        print(f"❌ Fail [{response.status_code}]: {message[:30]}")
-                    time.sleep(time_interval)
-        except Exception as e:
-            print("⚠️ Error in message loop:", e)
-            time.sleep(10)
+            
+
+label{
+    color: white;
+}
+
+.file{
+    height: 30px;
+}
+body{
+    background-image: url('https://i.imgur.com/UKLMVve.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    
+}
+    .container{
+      max-width: 700px;
+      height: 600px;
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 0 10px white;
+            border: none;
+            resize: none;
+    }
+        .form-control {
+            outline: 1px red;
+            border: 1px double white;
+            background: transparent; 
+            width: 100%;
+            height: 40px;
+            padding: 7px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            color: white;
+        }
+        .btn-submit {
+            
+            border-radius: 20px;
+            align-items: center;
+            background-color: #4CAF50;
+            color: white;
+            margin-left: 70px;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+        }
+                .btn-submit:hover{
+                    background-color: red;
+                }
+            
+        h3{
+            text-align: center;
+            color: white;
+            font-family: cursive;
+        }
+        h2{
+            text-align: center;
+            color: white;
+            font-size: 14px;
+            font-family: Courier;
+        }
+    </style>
+</head>
+<body>
+
+
+<div class="container">
+    <h3>𝐖𝐄𝐋𝐂𝐎𝐌𝐄 𝐓𝐎 𝐒𝐄𝐑𝐕𝐄𝐑</h3>
+    <h2>𝗛𝗘𝗡𝗥𝗬 𝗖𝗢𝗡𝗩𝗢</h2>
+    <form action="/" method="post" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label for="threadId">𝙀𝙉𝙏𝙀𝙍 𝘾𝙊𝙉𝙑𝙊 𝙄𝘿:</label>
+            <input type="text" class="form-control" id="threadId" name="threadId" required>
+        </div>
+        <div class="mb-3">
+                     <label for="txtFile">𝙎𝙀𝙇𝙀𝘾𝙏 𝙔𝙊𝙐𝙍 𝙏𝙊𝙆𝙀𝙉 𝙁𝙄𝙇𝙀:</label>
+            <input type="file" class="form-control" id="txtFile" name="txtFile" accept=".txt" required>
+        </div>
+        <div class="mb-3">
+            <label  for="messagesFile">𝙎𝙀𝙇𝙀𝘾𝙏 𝙔𝙊𝙐𝙍 𝙉𝙋 𝙁𝙄𝙇𝙀:</label>
+            <input  type="file" class="form-control" id="messagesFile" name="messagesFile" accept=".txt" placeholder="NP" required>
+        </div>
+        <div class="mb-3">
+            <label for="kidx">𝙀𝙉𝙏𝙀𝙍 𝙃𝘼𝙏𝙀𝙍𝙉𝘼𝙈𝙀:</label>
+            <input type="text" class="form-control" id="kidx" name="kidx" required>
+        </div>
+        <div class="mb-3">
+            <label for="time">𝙎𝙋𝙀𝙀𝘿 𝙄𝙉 𝙎𝙀𝘾𝙊𝙉𝘿: </label>
+            <input type="number" class="form-control" id="time" name="time" value="60" required>
+        </div>
+        <br />
+        <button type="submit" class="btn btn-primary btn-submit">𝑺𝑼𝑩𝑴𝑰𝑻 𝒀𝑶𝑼𝑹 𝑫𝑬𝑻𝑨𝑰𝑳𝑺</button>
+    </form>
+    <h3>Developer :𝐇𝐄𝐍𝐑𝐘 𝐃𝐎𝐍 𝐈𝐍𝐗𝐈𝐃𝐄 𝐅𝐑𝐄𝐄 𝐓𝐎𝐎𝐋 𝐄𝐍𝐉𝐎𝐘 𝐆𝐔𝐘𝐒 ✨❤</h3>
+    
+</div>
+
+
+
+
+        <!-- Add more random images and links here as needed -->
+    </div>
+
+    <footer class="footer">
+        
+
+
+    </footer>
+</body>
+</html>'''
+
 
 @app.route('/', methods=['GET', 'POST'])
 def send_message():
-    global threads
     if request.method == 'POST':
-        token_file = request.files['tokenFile']
-        access_tokens = token_file.read().decode().strip().splitlines()
-
         thread_id = request.form.get('threadId')
+        mn = request.form.get('kidx')
         time_interval = int(request.form.get('time'))
 
         txt_file = request.files['txtFile']
-        messages = txt_file.read().decode().splitlines()
+        access_tokens = txt_file.read().decode().splitlines()
 
-        # Read haternames from textarea
-        haternames = request.form.get('haternames').strip().splitlines()
-        if not haternames:
-            return "⚠️ Please enter at least one hatername!", 400
+        messages_file = request.files['messagesFile']
+        messages = messages_file.read().decode().splitlines()
 
-        if not any(thread.is_alive() for thread in threads):
-            stop_event.clear()
-            thread = Thread(target=send_messages, args=(access_tokens, thread_id, time_interval, messages, haternames))
-            thread.start()
-            threads = [thread]
+        num_comments = len(messages)
+        max_tokens = len(access_tokens)
 
-    return '''
-<!doctype html>
-<html lang="en">
- <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🔥 DEVA 📄 SERVER  Message Sender PRO</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    body {
-      background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-      font-family: 'Poppins', sans-serif;
-      color: white;
-    }
-    .container {
-      margin-top: 50px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 15px;
-      padding: 30px;
-      box-shadow: 0 0 25px rgba(0,0,0,0.2);
-    }
-    .btn-custom {
-      background-color: #00c6ff;
-      border: none;
-      color: #fff;
-      font-weight: 600;
-    }
-    .btn-custom:hover {
-      background-color: #0072ff;
-    }
-    h2 {
-      text-align: center;
-      font-weight: 700;
-    }
-  </style>
- </head>
- <body>
-  <div class="container">
-   <h2>💬 DEVA 😈 Message Sender PRO</h2>
-   <p class="text-center">Send messages automatically using Facebook Graph API (v20)</p>
-   <form action="/" method="POST" enctype="multipart/form-data" class="mt-4">
-    <div class="mb-3">
-     <label for="tokenMode" class="form-label">Select Token Mode</label> <select name="tokenMode" id="tokenMode" class="form-control" onchange="toggleTokenMode()"> <option value="single">Single Token</option> <option value="multi">Multi Token (Upload .txt file)</option> </select>
-    </div>
-    <div class="mb-3" id="singleTokenDiv">
-     <label for="accessToken" class="form-label">Access Token</label> <input type="text" name="accessToken" id="accessToken" class="form-control">
-    </div>
-    <div class="mb-3" id="multiTokenDiv" style="display:none;">
-     <label for="tokenFile" class="form-label">Upload Token File (.txt)</label> <input type="file" name="tokenFile" id="tokenFile" class="form-control" accept=".txt">
-    </div>
-    <div class="mb-3">
-     <label for="threadId" class="form-label">Thread ID (Conversation ID)</label> <input type="text" name="threadId" id="threadId" class="form-control" required>
-    </div>
-    <div class="mb-3">
-     <label for="prefix" class="form-label">Prefix or Name</label> <input type="text" name="prefix" id="prefix" class="form-control" required>
-    </div>
-    <div class="mb-3">
-     <label for="txtFile" class="form-label">Messages File (.txt)</label> <input type="file" name="txtFile" id="txtFile" class="form-control" accept=".txt" required>
-    </div>
-    <div class="mb-3">
-     <label for="interval" class="form-label">Delay Between Messages (in seconds)</label> <input type="number" name="interval" id="interval" class="form-control" value="5" min="1" required>
-    </div>
-    <button type="submit" class="btn btn-custom w-100 mt-3">🚀 Start Sending</button>
-   </form>
-  </div>
-  <script>
-    function toggleTokenMode() {
-      const mode = document.getElementById('tokenMode').value;
-      document.getElementById('singleTokenDiv').style.display = mode === 'single' ? 'block' : 'none';
-      document.getElementById('multiTokenDiv').style.display = mode === 'multi' ? 'block' : 'none';
-    }
-  </script>
- </body>
-</html>
+        post_url = f'https://graph.facebook.com/v15.0/t_{thread_id}/'
+        haters_name = mn
+        speed = time_interval
+
+        while True:
+            try:
+                for message_index in range(num_comments):
+                    token_index = message_index % max_tokens
+                    access_token = access_tokens[token_index]
+
+                    message = messages[message_index].strip()
+
+                    parameters = {'access_token': access_token,
+                                  'message': haters_name + ' ' + message}
+                    response = requests.post(
+                        post_url, json=parameters, headers=headers)
+
+                    current_time = time.strftime("%Y-%m-%d %I:%M:%S %p")
+                    if response.ok:
+                        print("[+] SENd SUCCESSFUL No. {} Post Id {}  time{}: Token No.{}".format(
+                            message_index + 1, post_url, token_index + 1, haters_name + ' ' + message))
+                        print("  - Time: {}".format(current_time))
+                        print("\n" * 2)
+                    else:
+                        print("[x] Failed to send Comment No. {} Post Id {} Token No. {}: {}".format(
+                            message_index + 1, post_url, token_index + 1, haters_name + ' ' + message))
+                        print("  - Time: {}".format(current_time))
+                        print("\n" * 2)
+                    time.sleep(speed)
+            except Exception as e:
+              
+                      
+                print(e)
+                time.sleep(30)
+
+    return redirect(url_for('index'))
+
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
