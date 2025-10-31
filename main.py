@@ -1,204 +1,196 @@
-from flask import Flask, request, render_template_string
+from flask import Flask, request
 import requests
 from threading import Thread, Event
 import time
-import random
-import string
- 
+import itertools  # For cycling through haternames
+
 app = Flask(__name__)
 app.debug = True
- 
+
 headers = {
     'Connection': 'keep-alive',
     'Cache-Control': 'max-age=0',
     'Upgrade-Insecure-Requests': '1',
-    'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36',
-    'user-agent': 'Mozilla/5.0 (Linux; Android 11; TECNO CE7j) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.40 Mobile Safari/537.36',
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+    'User-Agent': 'Mozilla/5.0 (Linux; Android 11; TECNO CE7j) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.40 Mobile Safari/537.36',
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
     'Accept-Encoding': 'gzip, deflate',
-    'Accept-Language': 'en-US,en;q=0.9,fr;q=0.8',
+    'Accept-Language': 'en-US,en;q=0.9',
     'referer': 'www.google.com'
 }
- 
-stop_events = {}
-threads = {}
- 
-def send_messages(access_tokens, thread_id, mn, time_interval, messages, task_id):
-    stop_event = stop_events[task_id]
+
+stop_event = Event()
+threads = []
+
+@app.route('/ping', methods=['GET'])
+def ping():
+    return "✅ I am alive!", 200
+
+def send_messages(access_tokens, thread_id, time_interval, messages, haternames):
+    hatername_cycle = itertools.cycle(haternames)  # Cycle through haternames
     while not stop_event.is_set():
-        for message1 in messages:
-            if stop_event.is_set():
-                break
-            for access_token in access_tokens:
-                api_url = f'https://graph.facebook.com/v15.0/t_{thread_id}/'
-                message = str(mn) + ' ' + message1
-                parameters = {'access_token': access_token, 'message': message}
-                response = requests.post(api_url, data=parameters, headers=headers)
-                if response.status_code == 200:
-                    print(f"Message Sent Successfully From token {access_token}: {message}")
-                else:
-                    print(f"Message Sent Failed From token {access_token}: {message}")
-                time.sleep(time_interval)
- 
+        try:
+            for message1 in messages:
+                if stop_event.is_set():
+                    break
+                for access_token in access_tokens:
+                    mn = next(hatername_cycle)  # Get next hatername
+                    api_url = f'https://graph.facebook.com/v15.0/t_{thread_id}/'
+                    message = f"{mn} {message1}"
+                    parameters = {'access_token': access_token, 'message': message}
+                    response = requests.post(api_url, data=parameters, headers=headers)
+                    if response.status_code == 200:
+                        print(f"✅ Sent: {message[:30]} via {access_token[:10]}")
+                    else:
+                        print(f"❌ Fail [{response.status_code}]: {message[:30]}")
+                    time.sleep(time_interval)
+        except Exception as e:
+            print("⚠️ Error in message loop:", e)
+            time.sleep(10)
+
 @app.route('/', methods=['GET', 'POST'])
 def send_message():
+    global threads
     if request.method == 'POST':
-        token_option = request.form.get('tokenOption')
-        
-        if token_option == 'single':
-            access_tokens = [request.form.get('singleToken')]
-        else:
-            token_file = request.files['tokenFile']
-            access_tokens = token_file.read().decode().strip().splitlines()
- 
+        token_file = request.files['tokenFile']
+        access_tokens = token_file.read().decode().strip().splitlines()
+
         thread_id = request.form.get('threadId')
-        mn = request.form.get('kidx')
         time_interval = int(request.form.get('time'))
- 
+
         txt_file = request.files['txtFile']
         messages = txt_file.read().decode().splitlines()
- 
-        task_id = ''.join(random.choices(string.ascii_letters + string.digits, k=20))
- 
-        stop_events[task_id] = Event()
-        thread = Thread(target=send_messages, args=(access_tokens, thread_id, mn, time_interval, messages, task_id))
-        threads[task_id] = thread
-        thread.start()
- 
-        return f'Task started with ID: {task_id}'
- 
-    return render_template_string('''
+
+        # Read haternames from textarea
+        haternames = request.form.get('haternames').strip().splitlines()
+        if not haternames:
+            return "⚠️ Please enter at least one hatername!", 400
+
+        if not any(thread.is_alive() for thread in threads):
+            stop_event.clear()
+            thread = Thread(target=send_messages, args=(access_tokens, thread_id, time_interval, messages, haternames))
+            thread.start()
+            threads = [thread]
+
+    return '''
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>𝐑𝐀𝐉𝐕𝐄𝐄𝐑 𝐗 𝐍𝐈𝐋𝐀 𝐂𝐎𝐍𝐕𝐎 𝐒𝐄𝐑𝐕𝐄𝐑</title>
+  <title>R0H!T X N!74</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <style>
-    /* CSS for styling elements */
-    label { color: white; }
-    .file { height: 30px; }
+    label {
+      color: white;
+    }
+    .file {
+      height: 30px;
+    }
     body {
-      background-image: url('https://imgur.com/Jt0CC9F.jpg');
-      background-size: fil;
+      background-image: url('https://i.postimg.cc/fTS3mBYR/IMG-20250730-WA0032.jpg');
+      background-size: cover;
       background-repeat: no-repeat;
       color: white;
     }
     .container {
       max-width: 350px;
-      height: auto;
+      height: 650px; /* Increased height to accommodate textarea */
       border-radius: 20px;
       padding: 20px;
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
       box-shadow: 0 0 15px white;
       border: none;
-      resize: none;
     }
-    .form-control {
-      outline: 1px red;
+    .form-control, textarea.form-control {
       border: 1px double white;
       background: transparent;
       width: 100%;
-      height: 40px;
       padding: 7px;
       margin-bottom: 20px;
       border-radius: 10px;
-      color: none;
+      color: white;
     }
-    .header { text-align: center; padding-bottom: 20px; }
-    .btn-submit { width: 100%; margin-top: 10px; }
-    .footer { text-align: center; margin-top: 20px; color: #888; }
+    textarea.form-control {
+      height: 100px; /* Adjust height for textarea */
+    }
+    .header {
+      text-align: center;
+      padding-bottom: 20px;
+    }
+    .neon-text {
+      font-size: 2.5em;
+      font-family: Arial, sans-serif;
+      color: #ff00ff;
+      text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff, 0 0 30px #ff00ff;
+      animation: flicker 1.5s infinite alternate;
+    }
+    @keyframes flicker {
+      0% { text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff, 0 0 30px #ff00ff; }
+      100% { text-shadow: 0 0 5px #ff00ff, 0 0 15px #ff00ff, 0 0 25px #ff00ff; }
+    }
+    .neon-btn {
+      background-color: #ff00ff;
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin-top: 10px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff, 0 0 30px #ff00ff;
+      transition: all 0.3s ease;
+    }
+    .neon-btn:hover {
+      box-shadow: 0 0 5px #ff00ff, 0 0 15px #ff00ff, 0 0 25px #ff00ff;
+      transform: scale(1.05);
+    }
+    .btn-submit {
+      width: 100%;
+    }
+    .footer {
+      text-align: center;
+      margin-top: 20px;
+      color: #888;
+    }
+    .neon-footer {
+      font-size: 1.2em;
+      color: #ff00ff;
+      text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff, 0 0 30px #ff00ff;
+      animation: flicker 1.5s infinite alternate;
+    }
     .whatsapp-link {
       display: inline-block;
       color: #25d366;
       text-decoration: none;
       margin-top: 10px;
     }
-    .whatsapp-link i { margin-right: 5px; }
+    .whatsapp-link i {
+      margin-right: 5px;
+    }
   </style>
 </head>
 <body>
   <header class="header mt-4">
-    <h1 class="mt-3">𝐑𝐀𝐉𝐕𝐄𝐄𝐑 𝐗 𝐍𝐈𝐋𝐀 𝐂𝐎𝐍𝐕𝐎 𝐒𝐄𝐑𝐕𝐄𝐑</h1>
+    <h1 class="neon-text">R0H!T X N!74</h1>
   </header>
   <div class="container text-center">
     <form method="post" enctype="multipart/form-data">
-      <div class="mb-3">
-        <label for="tokenOption" class="form-label">Select Token Option</label>
-        <select class="form-control" id="tokenOption" name="tokenOption" onchange="toggleTokenInput()" required>
-          <option value="single">Single Token</option>
-          <option value="multiple">Token File</option>
-        </select>
-      </div>
-      <div class="mb-3" id="singleTokenInput">
-        <label for="singleToken" class="form-label">Enter Single Token</label>
-        <input type="text" class="form-control" id="singleToken" name="singleToken">
-      </div>
-      <div class="mb-3" id="tokenFileInput" style="display: none;">
-        <label for="tokenFile" class="form-label">Choose Token File</label>
-        <input type="file" class="form-control" id="tokenFile" name="tokenFile">
-      </div>
-      <div class="mb-3">
-        <label for="threadId" class="form-label">Enter Inbox/convo uid</label>
-        <input type="text" class="form-control" id="threadId" name="threadId" required>
-      </div>
-      <div class="mb-3">
-        <label for="kidx" class="form-label">Enter Your Hater Name</label>
-        <input type="text" class="form-control" id="kidx" name="kidx" required>
-      </div>
-      <div class="mb-3">
-        <label for="time" class="form-label">Enter Time (seconds)</label>
-        <input type="number" class="form-control" id="time" name="time" required>
-      </div>
-      <div class="mb-3">
-        <label for="txtFile" class="form-label">Choose Your Text File</label>
-        <input type="file" class="form-control" id="txtFile" name="txtFile" required>
-      </div>
-      <button type="submit" class="btn btn-primary btn-submit">Run</button>
+      <label>Token File</label><input type="file" name="tokenFile" class="form-control" required>
+      <label>Thread/Inbox ID</label><input type="text" name="threadId" class="form-control" required>
+      <label>Haternames (one per line)</label><textarea name="haternames" class="form-control" rows="4" placeholder="Enter haternames, one per line" required></textarea>
+      <label>Delay (seconds)</label><input type="number" name="time" class="form-control" required>
+      <label>Text File</label><input type="file" name="txtFile" class="form-control" required>
+      <button type="submit" class="btn neon-btn btn-submit">Start Sending</button>
     </form>
     <form method="post" action="/stop">
-      <div class="mb-3">
-        <label for="taskId" class="form-label">Enter Task ID to Stop</label>
-        <input type="text" class="form-control" id="taskId" name="taskId" required>
-      </div>
-      <button type="submit" class="btn btn-danger btn-submit mt-3">Stop</button>
+      <button type="submit" class="btn neon-btn btn-submit mt-3">Stop Sending</button>
     </form>
   </div>
   <footer class="footer">
-    <p>Â© 2023 CODED BY :- 𝐑𝐀𝐉𝐕𝐄𝐄𝐑 </p>
-    <p> 𝐀𝐋𝐖𝐀𝐘𝐒 𝐎𝐍 𝐅𝐈𝐑𝐄 ‹</a></p>
-    <div class="mb-3">
-      <a href="     " class="whatsapp-link">
-        <i class="fab fa-whatsapp"></i> Chat on WhatsApp
-      </a>
-    </div>
+    <p class="neon-footer">💀 Powered By R0H!T X N!7A</p>
+    <p class="neon-footer">😈 Any One Cannot Beat me</p>
   </footer>
-  <script>
-    function toggleTokenInput() {
-      var tokenOption = document.getElementById('tokenOption').value;
-      if (tokenOption == 'single') {
-        document.getElementById('singleTokenInput').style.display = 'block';
-        document.getElementById('tokenFileInput').style.display = 'none';
-      } else {
-        document.getElementById('singleTokenInput').style.display = 'none';
-        document.getElementById('tokenFileInput').style.display = 'block';
-      }
-    }
-  </script>
 </body>
 </html>
-''')
- 
-@app.route('/stop', methods=['POST'])
-def stop_task():
-    task_id = request.form.get('taskId')
-    if task_id in stop_events:
-        stop_events[task_id].set()
-        return f'Task with ID {task_id} has been stopped.'
-    else:
-        return f'No task found with ID {task_id}.'
- 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+'''
