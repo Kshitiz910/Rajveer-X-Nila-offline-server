@@ -37,7 +37,7 @@ label{
     height: 30px;
 }
 body{
-    background-image: url('https://pin.it/bjYkLrsG5.jpg');
+    background: linear-gradient(135deg, #f44336 0%, #c62828 100%);
     background-size: cover;
     background-repeat: no-repeat;
     
