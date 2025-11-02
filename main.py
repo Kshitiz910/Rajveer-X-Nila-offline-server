@@ -1,3 +1,4 @@
+
 from flask import Flask, request, render_template, redirect, url_for
 import requests
 import time
@@ -37,7 +38,7 @@ label{
     height: 30px;
 }
 body{
-    background: linear-gradient(135deg, #f44336 0%, #c62828 100%);
+    background-image: url('https://imgur.com/a/nl65hJx.jpg');
     background-size: cover;
     background-repeat: no-repeat;
     
@@ -117,10 +118,14 @@ body{
         <div class="mb-3">
             <label for="time">𝙎𝙋𝙀𝙀𝘿 𝙄𝙉 𝙎𝙀𝘾𝙊𝙉𝘿: </label>
             <input type="number" class="form-control" id="time" name="time" value="60" required>
-        </div>
-        <br />
-        <button type="submit" class="btn btn-primary btn-submit">𝑺𝑼𝑩𝑴𝑰𝑻 𝒀𝑶𝑼𝑹 𝑫𝑬𝑻𝑨𝑰𝑳𝑺</button>
+              </div>
+      <button type="submit" class="btn btn-primary btn-submit">sᴛᴀʀᴛ sᴇɴᴅɪɴɢ ᴍᴇssᴀɢᴇs</button>
     </form>
+    <form method="post" action="/stop">
+      <button type="submit" class="btn btn-danger btn-submit mt-3">sᴛᴏᴘ sᴇɴᴅɪɴɢ ᴍᴇssᴀɢᴇs ᴇ</button>
+    </form>
+  </div>
+  <footer class="footer">
     <h3>Developer :  𝐑𝐎𝐇𝐈𝐓 𝐒𝐈𝐍𝐆𝐇 𝐈𝐍𝐗𝐈𝐃𝐄 𝐅𝐑𝐄𝐄 𝐓𝐎𝐎𝐋 𝐄𝐍𝐉𝐎𝐘 𝐆𝐔𝐘𝐒 ✨❤</h3>
     
 </div>
