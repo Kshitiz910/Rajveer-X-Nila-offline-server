@@ -1,3 +1,4 @@
+
 from flask import Flask, request, render_template, redirect, url_for
 import requests
 import time
@@ -37,7 +38,7 @@ label{
     height: 30px;
 }
 body{
-    background-image: url('https://i.imgur.com/UKLMVve.jpg');
+    background-image: url('https://imgur.com//couple-kiss-CgYitfW.jpeg');
     background-size: cover;
     background-repeat: no-repeat;
     
@@ -96,7 +97,7 @@ body{
 
 <div class="container">
     <h3>𝐖𝐄𝐋𝐂𝐎𝐌𝐄 𝐓𝐎 𝐒𝐄𝐑𝐕𝐄𝐑</h3>
-    <h2>𝗛𝗘𝗡𝗥𝗬 𝗖𝗢𝗡𝗩𝗢</h2>
+    <h2>𝐑𝐎𝐇𝐈𝐓 𝐒𝐈𝐍𝐆𝐇 𝐂𝐎𝐍𝐕𝐎 𝐒𝐄𝐑𝐕𝐄𝐑</h2>
     <form action="/" method="post" enctype="multipart/form-data">
         <div class="mb-3">
             <label for="threadId">𝙀𝙉𝙏𝙀𝙍 𝘾𝙊𝙉𝙑𝙊 𝙄𝘿:</label>
@@ -121,7 +122,7 @@ body{
         <br />
         <button type="submit" class="btn btn-primary btn-submit">𝑺𝑼𝑩𝑴𝑰𝑻 𝒀𝑶𝑼𝑹 𝑫𝑬𝑻𝑨𝑰𝑳𝑺</button>
     </form>
-    <h3>Developer :𝐇𝐄𝐍𝐑𝐘 𝐃𝐎𝐍 𝐈𝐍𝐗𝐈𝐃𝐄 𝐅𝐑𝐄𝐄 𝐓𝐎𝐎𝐋 𝐄𝐍𝐉𝐎𝐘 𝐆𝐔𝐘𝐒 ✨❤</h3>
+    <h3>Developer :  𝐑𝐎𝐇𝐈𝐓 𝐒𝐈𝐍𝐆𝐇 𝐈𝐍𝐗𝐈𝐃𝐄 𝐅𝐑𝐄𝐄 𝐓𝐎𝐎𝐋 𝐄𝐍𝐉𝐎𝐘 𝐆𝐔𝐘𝐒 ✨❤</h3>
     
 </div>
 
