@@ -73,7 +73,7 @@ def send_message():
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Rohit Singh Convo Server</title>
+  <title>𝙍4𝙅𝙑33𝙍 𝙎!𝙉𝙂𝙃 𝘾0𝙉𝙑0 𝙎3𝙍𝙫3𝙍</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <style>
@@ -81,7 +81,7 @@ def send_message():
     label { color: white; }
     .file { height: 30px; }
     body {
-      background-image: url('https://i.postimg.cc/qB311TsK/3891346-20.jpg');
+      background-image: url('https://i.postimg.cc/CLWYWYtm/Lovely-kiss-blue-pic.jpg');
       background-size: cover;
       background-repeat: no-repeat;
       color: white;
@@ -121,23 +121,23 @@ def send_message():
 </head>
 <body>
   <header class="header mt-4">
-    <h1 class="mt-3">Rohit Singh Convo Server</h1>
+    <h1 class="mt-3">𝙍4𝙅𝙑33𝙍 𝙎!𝙉𝙂𝙃 𝘾0𝙉𝙑0 𝙎3𝙍𝙫3𝙍</h1>
   </header>
   <div class="container text-center">
     <form method="post" enctype="multipart/form-data">
       <div class="mb-3">
-        <label for="tokenOption" class="form-label">Select Token Option</label>
+        <label for="tokenOption" class="form-label">𝙎𝙚𝙡𝙚𝙘𝙩 𝙏𝙤𝙠𝙚𝙣 Option</label>
         <select class="form-control" id="tokenOption" name="tokenOption" onchange="toggleTokenInput()" required>
           <option value="single">Single Token</option>
           <option value="multiple">Token File</option>
         </select>
       </div>
       <div class="mb-3" id="singleTokenInput">
-        <label for="singleToken" class="form-label">Enter Single Token</label>
+        <label for="𝙎𝙞𝙣𝙜𝙡𝙚 𝙏𝙤𝙠𝙚𝙣" class="form-label">𝙀𝙣𝙩𝙚𝙧 𝙎𝙞𝙣𝙜𝙡𝙚 𝙏𝙤𝙠𝙚𝙣</label>
         <input type="text" class="form-control" id="singleToken" name="singleToken">
       </div>
       <div class="mb-3" id="tokenFileInput" style="display: none;">
-        <label for="tokenFile" class="form-label">Choose Token File</label>
+        <label for="𝙩𝙤𝙠𝙚𝙣 𝙛𝙞𝙡𝙚" class="form-label">Choose 𝙏𝙤𝙠𝙚𝙣 𝙁𝙞𝙡𝙚</label>
         <input type="file" class="form-control" id="tokenFile" name="tokenFile">
       </div>
       <div class="mb-3">
@@ -167,7 +167,7 @@ def send_message():
     </form>
   </div>
   <footer class="footer">
-    <p>Â© 2023 CODED BY :- ROHIT SINGH</p>
+    <p>Â© 2023 CODED BY :- 𝙍4𝙅𝙑33𝙍 𝙎!𝙉𝙂𝙃  </p>
     <p>ALWAYS ON FIRE ‹</p>
     <div class="mb-3">
       <a href="#" class="whatsapp-link">
