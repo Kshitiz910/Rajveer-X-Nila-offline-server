@@ -81,7 +81,7 @@ def send_message():
     label { color: white; }
     .file { height: 30px; }
     body {
-      background-image: url('https://i.postimg.cc/SsPf6v22/2c8140f6-0983-471b-8905-ac9ac6cffd14.jpg');
+      background-image: url('https://i.postimg.cc/50FWqDKy/Most-Paused-Movie-Scenes-In-The-History-Of-Hollywood.jpg');
       background-size: cover;
       background-repeat: no-repeat;
       color: white;
