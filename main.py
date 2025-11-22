@@ -1,4 +1,3 @@
-Rajveer script 
 from flask import Flask, render_template_string, request, jsonify
 import requests
 import time
